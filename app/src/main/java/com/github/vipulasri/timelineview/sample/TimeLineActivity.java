@@ -1,26 +1,29 @@
 package com.github.vipulasri.timelineview.sample;
 
-import android.Manifest;
+import android.annotation.SuppressLint;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.github.vipulasri.timelineview.sample.Unit.UTime;
 import com.github.vipulasri.timelineview.sample.base.BaseActivity;
 import com.github.vipulasri.timelineview.sample.model.OrderStatus;
 import com.github.vipulasri.timelineview.sample.model.Orientation;
 import com.github.vipulasri.timelineview.sample.model.TimeLineModel;
-import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.litepal.LitePal;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import cn.qqtheme.framework.picker.DatePicker;
+import cn.qqtheme.framework.util.ConvertUtils;
 
 /**
  * Created by HP-HP on 05-12-2015.
@@ -32,36 +35,38 @@ public class TimeLineActivity extends BaseActivity {
     private Orientation mOrientation;
     private boolean mWithLinePadding;
     private FloatingActionButton flaction;
-    private final RxPermissions rxPermissions = new RxPermissions(this);
+    private TimeLineLocation timeLineLocation;
+    public Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timeline);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        toolbar = findViewById(R.id.toolbar);
 
+        setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-//        mOrientation = (Orientation) getIntent().getSerializableExtra(MainActivity.EXTRA_ORIENTATION);
+        timeLineLocation = new TimeLineLocation(this);
+
         mOrientation = Orientation.VERTICAL;
-
-//        mWithLinePadding = getIntent().getBooleanExtra(MainActivity.EXTRA_WITH_LINE_PADDING, false);
         mWithLinePadding = false;
-
-        setTitle(mOrientation == Orientation.HORIZONTAL ?
-                getResources().getString(R.string.horizontal_timeline) :
-                getResources().getString(R.string.vertical_timeline));
-
+        setTitle(R.string.tile);
         mRecyclerView = findViewById(R.id.recyclerView);
         flaction = findViewById(R.id.floatingActionButton);
         mRecyclerView.setLayoutManager(getLinearLayoutManager());
         mRecyclerView.setHasFixedSize(true);
-
+        initLocation();
         initView();
+    }
+
+    @SuppressLint({"CheckResult", "MissingPermission"})
+    private void initLocation() {
+
+
     }
 
     private LinearLayoutManager getLinearLayoutManager() {
@@ -75,33 +80,37 @@ public class TimeLineActivity extends BaseActivity {
     private void initView() {
         setDataListItems();
         bindFloatButton();
+        initToolBar();
         mTimeLineAdapter = new TimeLineAdapter(mDataList, mOrientation, mWithLinePadding);
         mRecyclerView.setAdapter(mTimeLineAdapter);
     }
 
+    private void initToolBar() {
+        toolbar.setTitle("----测试用的title");
+        toolbar.setOnClickListener(v -> {
+            v.setBackgroundColor(getColor(R.color.colorPrimaryDark));
+            onYearMonthDayPicker(v);
+        });
+    }
+
+    @SuppressLint("MissingPermission")
     private void bindFloatButton() {
         flaction.setOnClickListener(v -> {
-            TimeLineModel timeLineModel = new TimeLineModel("好的好的~~~" +
-                    mTimeLineAdapter.getItemCount(),
+            Location location = timeLineLocation.getLocation();
+            String msg = "无法获取地理位置";
+            if (location != null) {
+                double latitude = location.getLatitude();
+                double longitude = location.getLongitude();
+                msg = "lng=" + longitude + "  lat=" + latitude;
+            }
+            String address = timeLineLocation.formatAddress();
+            if (address != null) {
+                msg = address;
+            }
+            TimeLineModel timeLineModel = new TimeLineModel(msg,
                     UTime.now(),
                     OrderStatus.COMPLETED);
             mDataList.add(0, timeLineModel);
-
-
-            Localtion location = new Localtion(TimeLineActivity.this);
-
-            rxPermissions
-                    .request(Manifest.permission.ACCESS_FINE_LOCATION)
-                    .subscribe(granted -> {
-                        if (granted) {
-                            Log.i(this.getClass().getSimpleName(), "?????????????????success: ");
-                        } else {
-                            Log.i(this.getClass().getSimpleName(), "?????????????????:failed: ");
-                        }
-                    });
-
-
-
 
             timeLineModel.save();
             mTimeLineAdapter.notifyDataSetChanged();
@@ -110,19 +119,44 @@ public class TimeLineActivity extends BaseActivity {
     }
 
     private void setDataListItems() {
-      /*  mDataList.add(new TimeLineModel("Item successfully delivered", "", OrderStatus.INACTIVE));
-        mDataList.add(new TimeLineModel("Courier is out to delivery your order", "2017-02-12 08:00", OrderStatus.ACTIVE));
-        mDataList.add(new TimeLineModel("Item has reached courier facility at New Delhi", "2017-02-11 21:00", OrderStatus.COMPLETED));
-        mDataList.add(new TimeLineModel("Item has been given to the courier", "2017-02-11 18:00", OrderStatus.COMPLETED));
-        mDataList.add(new TimeLineModel("Item is packed and will dispatch soon", "2017-02-11 09:30", OrderStatus.COMPLETED));
-        mDataList.add(new TimeLineModel("Order is being readied for dispatch", "2017-02-11 08:00", OrderStatus.COMPLETED));
-        mDataList.add(new TimeLineModel("Order processing initiated", "2017-02-10 15:00", OrderStatus.COMPLETED));
-        mDataList.add(new TimeLineModel("Order confirmed by seller", "2017-02-10 14:30", OrderStatus.COMPLETED));
-        mDataList.add(new TimeLineModel("Order placed successfully", "2017-02-10 14:00", OrderStatus.COMPLETED));*/
         mDataList = LitePal.findAll(TimeLineModel.class);
         if (mDataList != null && !mDataList.isEmpty()) {
             Collections.sort(mDataList);
         }
+    }
+
+    public void onYearMonthDayPicker(View view) {
+        final DatePicker picker = new DatePicker(this);
+        picker.setCanceledOnTouchOutside(true);
+        picker.setUseWeight(true);
+        picker.setTopPadding(ConvertUtils.toPx(this, 10));
+        picker.setRangeEnd(2111, 1, 11);
+        picker.setRangeStart(2016, 8, 29);
+        picker.setSelectedItem(2050, 10, 14);
+        picker.setResetWhileWheel(false);
+        picker.setOnDatePickListener(new DatePicker.OnYearMonthDayPickListener() {
+            @Override
+            public void onDatePicked(String year, String month, String day) {
+                logI(year + "-" + month + "-" + day);
+            }
+        });
+        picker.setOnWheelListener(new DatePicker.OnWheelListener() {
+            @Override
+            public void onYearWheeled(int index, String year) {
+                picker.setTitleText(year + "-" + picker.getSelectedMonth() + "-" + picker.getSelectedDay());
+            }
+
+            @Override
+            public void onMonthWheeled(int index, String month) {
+                picker.setTitleText(picker.getSelectedYear() + "-" + month + "-" + picker.getSelectedDay());
+            }
+
+            @Override
+            public void onDayWheeled(int index, String day) {
+                picker.setTitleText(picker.getSelectedYear() + "-" + picker.getSelectedMonth() + "-" + day);
+            }
+        });
+        picker.show();
     }
 
     @Override

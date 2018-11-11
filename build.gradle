@@ -2,7 +2,7 @@
 
 buildscript {
     repositories {
-        maven{ url 'http://maven.aliyun.com/nexus/content/groups/public'}
+        maven { url 'http://maven.aliyun.com/nexus/content/groups/public' }
         maven { url 'https://jitpack.io' }
         jcenter()
         google()
@@ -11,6 +11,9 @@ buildscript {
         classpath 'com.android.tools.build:gradle:3.2.1'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
+// https://mvnrepository.com/artifact/com.jakewharton/butterknife-gradle-plugin
+        classpath 'com.jakewharton:butterknife-gradle-plugin:9.0.0-rc1'
+//        implementation group: 'com.jakewharton', name: 'butterknife-gradle-plugin', version: '9.0.0-rc1'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -19,7 +22,7 @@ buildscript {
 
 allprojects {
     repositories {
-        maven{ url 'http://maven.aliyun.com/nexus/content/groups/public'}
+        maven { url 'http://maven.aliyun.com/nexus/content/groups/public' }
         maven { url 'https://jitpack.io' }
         jcenter()
         maven { url "https://maven.google.com" }
@@ -34,9 +37,9 @@ task clean(type: Delete) {
 
 ext {
     compileSdkVersion = 28
-    buildToolsVersion = "27.0.3"
+    buildToolsVersion = "28.0.3"
     minSdkVersion = 26
-    targetSdkVersion = 26
-    supportLibrary = "27.0.2"
+    targetSdkVersion = 28
+    supportLibrary = "28.0.2"
     butterknife = "8.8.1"
 }

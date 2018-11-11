@@ -6,4 +6,5 @@
     <string name="vertical_timeline">纵向时间轴</string>
     <string name="horizontal_timeline_w_padding">Horizontal Timeline With Line Padding</string>
     <string name="vertical_timeline_w_padding">Vertical Timeline With Line Padding</string>
+    <string name="tile">时间</string>
 </resources>

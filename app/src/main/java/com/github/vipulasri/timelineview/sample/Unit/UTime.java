@@ -7,20 +7,22 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 public class UTime {
+    public static final DateTimeFormatter PATTERN_DATE_TIME = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
     private UTime() {
 
     }
 
     public static LocalDateTime formatDateTimeToLocal(String dateTime) {
-        return LocalDateTime.parse(dateTime, DateTimeFormatter.BASIC_ISO_DATE);
+        return LocalDateTime.parse(dateTime, PATTERN_DATE_TIME);
     }
 
     public static String formatDateTime(Date date) {
-        return dateToLocal(date).format(DateTimeFormatter.BASIC_ISO_DATE);
+        return dateToLocal(date).format(PATTERN_DATE_TIME);
     }
 
     public static String now() {
-        return LocalDateTime.now().format(DateTimeFormatter.BASIC_ISO_DATE);
+        return LocalDateTime.now().format(PATTERN_DATE_TIME);
     }
 
     public static LocalDateTime dateToLocal(Date date) {
