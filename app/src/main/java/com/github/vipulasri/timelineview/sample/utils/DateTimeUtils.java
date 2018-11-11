@@ -1,9 +1,13 @@
 package com.github.vipulasri.timelineview.sample.utils;
 
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.text.format.DateUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
 
@@ -12,14 +16,14 @@ import java.util.Locale;
  */
 public class DateTimeUtils {
 
-    public static String parseDateTime(String dateString, String originalFormat, String outputFromat){
+    public static String parseDateTime(String dateString, String originalFormat, String outputFromat) {
 
         SimpleDateFormat formatter = new SimpleDateFormat(originalFormat, Locale.US);
         Date date = null;
         try {
             date = formatter.parse(dateString);
 
-            SimpleDateFormat dateFormat=new SimpleDateFormat(outputFromat, new Locale("US"));
+            SimpleDateFormat dateFormat = new SimpleDateFormat(outputFromat, new Locale("US"));
 
             return dateFormat.format(date);
 
@@ -29,7 +33,7 @@ public class DateTimeUtils {
         }
     }
 
-    public static String getRelativeTimeSpan(String dateString, String originalFormat){
+    public static String getRelativeTimeSpan(String dateString, String originalFormat) {
 
         SimpleDateFormat formatter = new SimpleDateFormat(originalFormat, Locale.US);
         Date date = null;
@@ -43,4 +47,5 @@ public class DateTimeUtils {
             return "";
         }
     }
+
 }

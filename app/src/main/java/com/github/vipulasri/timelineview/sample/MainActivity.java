@@ -35,38 +35,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         ButterKnife.bind(this);
 
-        mVerticalTimeLineButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onButtonClick(Orientation.VERTICAL, false);
-            }
-        });
+        mVerticalTimeLineButton.setOnClickListener(v -> onButtonClick(Orientation.VERTICAL, false));
 
-        mHorizontalTimeLineButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onButtonClick(Orientation.HORIZONTAL, false);
-            }
-        });
+        mHorizontalTimeLineButton.setOnClickListener(v -> onButtonClick(Orientation.HORIZONTAL, false));
 
-        mVerticalTimeLineButtonWPadding.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onButtonClick(Orientation.VERTICAL, true);
-            }
-        });
+        mVerticalTimeLineButtonWPadding.setOnClickListener(v -> onButtonClick(Orientation.VERTICAL, true));
 
-        mHorizontalTimeLineButtonWPadding.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onButtonClick(Orientation.HORIZONTAL, true);
-            }
-        });
+        mHorizontalTimeLineButtonWPadding.setOnClickListener(v -> onButtonClick(Orientation.HORIZONTAL, true));
 
     }
 

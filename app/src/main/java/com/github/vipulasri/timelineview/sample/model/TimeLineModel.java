@@ -2,15 +2,35 @@ package com.github.vipulasri.timelineview.sample.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
+
+import com.github.vipulasri.timelineview.sample.Unit.UTime;
+
+import org.litepal.crud.LitePalSupport;
+
+import java.sql.Time;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 /**
  * Created by HP-HP on 05-12-2015.
  */
-public class TimeLineModel implements Parcelable {
+public class TimeLineModel extends LitePalSupport implements Parcelable, Comparable<TimeLineModel> {
 
     private String mMessage;
     private String mDate;
     private OrderStatus mStatus;
+    private double lng;
+    private double lat;
+
+    public double getLng() {
+        return lng;
+    }
+
+    public double getLat() {
+        return lat;
+    }
 
     public TimeLineModel() {
     }
@@ -75,4 +95,19 @@ public class TimeLineModel implements Parcelable {
             return new TimeLineModel[size];
         }
     };
+
+
+    @Override
+    public int compareTo(@NonNull TimeLineModel o) {
+
+        LocalDateTime self = UTime.formatDateTimeToLocal(mDate);
+        LocalDateTime other = UTime.formatDateTimeToLocal(o.getDate());
+        return self.isBefore(other) ? 1 : -1;
+    }
+
+    public void setLng(double lng) {
+    }
+
+    public void setLat(double lat) {
+    }
 }

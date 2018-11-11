@@ -7,7 +7,7 @@ version = "1.0.6"
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
+    buildToolsVersion '28.0.3'
 
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
@@ -24,8 +24,8 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    testImplementation 'junit:junit:4.12'
 }
 
 def siteUrl = 'https://github.com/vipulasri/Timeline-View'      // Homepage URL of the library

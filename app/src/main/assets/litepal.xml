@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<litepal>
+    <dbname value="myTimeLineApp" />
+    <version value="1" />
+    <list>
+        //你创建的表格表格要详细地址
+        <mapping class="com.github.vipulasri.timelineview.sample.model.TimeLineModel" />
+    </list>
+</litepal>

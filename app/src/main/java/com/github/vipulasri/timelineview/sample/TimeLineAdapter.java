@@ -69,7 +69,8 @@ public class TimeLineAdapter extends RecyclerView.Adapter<TimeLineViewHolder> {
 
         if(!timeLineModel.getDate().isEmpty()) {
             holder.mDate.setVisibility(View.VISIBLE);
-            holder.mDate.setText(DateTimeUtils.parseDateTime(timeLineModel.getDate(), "yyyy-MM-dd HH:mm", "hh:mm a, dd-MMM-yyyy"));
+//            holder.mDate.setText(DateTimeUtils.parseDateTime(timeLineModel.getDate(), "yyyy-MM-dd HH:mm", "hh:mm a, dd-MMM-yyyy"));
+            holder.mDate.setText(timeLineModel.getDate());
         }
         else
             holder.mDate.setVisibility(View.GONE);
