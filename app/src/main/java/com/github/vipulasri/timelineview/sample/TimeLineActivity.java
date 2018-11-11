@@ -18,6 +18,8 @@ import com.github.vipulasri.timelineview.sample.model.TimeLineModel;
 
 import org.litepal.LitePal;
 
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -108,7 +110,7 @@ public class TimeLineActivity extends BaseActivity {
                 msg = address;
             }
             TimeLineModel timeLineModel = new TimeLineModel(msg,
-                    UTime.now(),
+                    UTime.nowDateTime(),
                     OrderStatus.COMPLETED);
             mDataList.add(0, timeLineModel);
 
@@ -127,18 +129,23 @@ public class TimeLineActivity extends BaseActivity {
 
     public void onYearMonthDayPicker(View view) {
         final DatePicker picker = new DatePicker(this);
+
+        LocalDateTime today = LocalDateTime.now();
         picker.setCanceledOnTouchOutside(true);
         picker.setUseWeight(true);
-        picker.setTopPadding(ConvertUtils.toPx(this, 10));
-        picker.setRangeEnd(2111, 1, 11);
-        picker.setRangeStart(2016, 8, 29);
-        picker.setSelectedItem(2050, 10, 14);
+        picker.setTopPadding(ConvertUtils.toPx(this, 2));
+        picker.setRangeEnd(today.getYear(), today.getMonthValue(), today.getDayOfMonth());
+//        picker.setRangeStart(2016, 8, 29);
+        picker.setSelectedItem(today.getYear(), today.getMonthValue(), today.getDayOfMonth());
         picker.setResetWhileWheel(false);
-        picker.setOnDatePickListener(new DatePicker.OnYearMonthDayPickListener() {
-            @Override
-            public void onDatePicked(String year, String month, String day) {
-                logI(year + "-" + month + "-" + day);
-            }
+        picker.setHalfScreen(true);
+//        picker.setTextSizeAutoFit(true);
+        picker.setTextSize(ConvertUtils.toPx(this, 10));
+        picker.setTitleTextSize(ConvertUtils.toPx(this, 10));
+        picker.setOnDatePickListener((DatePicker.OnYearMonthDayPickListener) (year, month, day) -> {
+            Month month1 = Month.of(Integer.valueOf(month));
+            LocalDateTime localDateTime = LocalDateTime.of(Integer.valueOf(year), month1, Integer.valueOf(day), 0, 0);
+//            view.setTitle(UTime.formatDate(localDateTime));
         });
         picker.setOnWheelListener(new DatePicker.OnWheelListener() {
             @Override
@@ -156,6 +163,7 @@ public class TimeLineActivity extends BaseActivity {
                 picker.setTitleText(picker.getSelectedYear() + "-" + picker.getSelectedMonth() + "-" + day);
             }
         });
+
         picker.show();
     }
 
