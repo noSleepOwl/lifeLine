@@ -23,7 +23,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.onStop();
     }
 
-    protected void toastMsg(String msg) {
+    public void toastMsg(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 

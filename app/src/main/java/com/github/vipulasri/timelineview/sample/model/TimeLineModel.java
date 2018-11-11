@@ -4,58 +4,53 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
-import com.github.vipulasri.timelineview.sample.Unit.UTime;
+import com.github.vipulasri.timelineview.sample.Unit.Util;
 
-import org.litepal.crud.LitePalSupport;
-
-import java.sql.Time;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
+import java.time.LocalTime;
 
 /**
  * Created by HP-HP on 05-12-2015.
  */
-public class TimeLineModel extends LitePalSupport implements Parcelable, Comparable<TimeLineModel> {
-
-    private String mMessage;
-    private String mDate;
+public class TimeLineModel implements Parcelable, Comparable<TimeLineModel> {
     private OrderStatus mStatus;
-    private double lng;
-    private double lat;
+    private DateseModel dateseModel;
 
-    public double getLng() {
-        return lng;
-    }
+    public static final Parcelable.Creator<TimeLineModel> CREATOR = new Parcelable.Creator<TimeLineModel>() {
+        @Override
+        public TimeLineModel createFromParcel(Parcel source) {
+            return new TimeLineModel(source);
+        }
 
-    public double getLat() {
-        return lat;
+        @Override
+        public TimeLineModel[] newArray(int size) {
+            return new TimeLineModel[size];
+        }
+    };
+
+    protected TimeLineModel(Parcel in) {
+        dateseModel.setMessage(in.readString());
+//        this.mDate = in.readString();
+        int tmpMStatus = in.readInt();
+        this.mStatus = tmpMStatus == -1 ? null : OrderStatus.values()[tmpMStatus];
     }
 
     public TimeLineModel() {
     }
 
-    public TimeLineModel(String mMessage, String mDate, OrderStatus mStatus) {
-        this.mMessage = mMessage;
-        this.mDate = mDate;
-        this.mStatus = mStatus;
+    public TimeLineModel(DateseModel dateseModel) {
+        this.dateseModel = dateseModel;
     }
+
 
     public String getMessage() {
-        return mMessage;
+        return dateseModel.getMessage();
     }
 
-    public void semMessage(String message) {
-        this.mMessage = message;
-    }
 
     public String getDate() {
-        return mDate;
+        return dateseModel.getCreateDate() + " " + dateseModel.getCreateTime();
     }
 
-    public void setDate(String date) {
-        this.mDate = date;
-    }
 
     public OrderStatus getStatus() {
         return mStatus;
@@ -72,42 +67,23 @@ public class TimeLineModel extends LitePalSupport implements Parcelable, Compara
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.mMessage);
-        dest.writeString(this.mDate);
+        dest.writeString(getMessage());
+        dest.writeString(getDate());
         dest.writeInt(this.mStatus == null ? -1 : this.mStatus.ordinal());
     }
 
-    protected TimeLineModel(Parcel in) {
-        this.mMessage = in.readString();
-        this.mDate = in.readString();
-        int tmpMStatus = in.readInt();
-        this.mStatus = tmpMStatus == -1 ? null : OrderStatus.values()[tmpMStatus];
-    }
-
-    public static final Parcelable.Creator<TimeLineModel> CREATOR = new Parcelable.Creator<TimeLineModel>() {
-        @Override
-        public TimeLineModel createFromParcel(Parcel source) {
-            return new TimeLineModel(source);
-        }
-
-        @Override
-        public TimeLineModel[] newArray(int size) {
-            return new TimeLineModel[size];
-        }
-    };
-
 
     @Override
-    public int compareTo(@NonNull TimeLineModel o) {
+    public int compareTo(@NonNull TimeLineModel other) {
 
-        LocalDateTime self = UTime.formatDateTimeToLocal(mDate);
-        LocalDateTime other = UTime.formatDateTimeToLocal(o.getDate());
-        return self.isBefore(other) ? 1 : -1;
+        LocalTime selfTime = Util.formatTime(getCreateTime());
+        LocalTime otherTime = Util.formatTime(other.getCreateTime());
+        return selfTime.isBefore(otherTime) ? 1 : -1;
     }
 
-    public void setLng(double lng) {
+    public String getCreateTime() {
+        return this.dateseModel.getCreateTime().trim();
     }
 
-    public void setLat(double lat) {
-    }
+
 }

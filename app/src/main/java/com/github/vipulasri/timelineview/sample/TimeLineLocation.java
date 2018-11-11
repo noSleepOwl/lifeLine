@@ -11,6 +11,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.github.vipulasri.timelineview.sample.base.BaseActivity;
 import com.tbruyelle.rxpermissions2.RxPermissions;
@@ -97,6 +98,10 @@ public class TimeLineLocation implements LocationListener {
 
     public Location getLocation() {
         if (!power) {
+            return null;
+        }
+        if (!locationManager.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER)) {
+            baseActivity.toastMsg("GPS 模块未启动");
             return null;
         }
         return locationManager.getLastKnownLocation(baseProvider);
