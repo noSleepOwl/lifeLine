@@ -219,20 +219,5 @@ public class TimeLineActivity extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle savedInstanceState) {
-        if (mOrientation != null)
-            savedInstanceState.putSerializable(MainActivity.EXTRA_ORIENTATION, mOrientation);
-        super.onSaveInstanceState(savedInstanceState);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey(MainActivity.EXTRA_ORIENTATION)) {
-                mOrientation = (Orientation) savedInstanceState.getSerializable(MainActivity.EXTRA_ORIENTATION);
-            }
-        }
-        super.onRestoreInstanceState(savedInstanceState);
-    }
+    
 }
