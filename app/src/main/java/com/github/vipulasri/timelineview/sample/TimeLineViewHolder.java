@@ -4,8 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
-import com.github.vipulasri.timelineview.LineType;
-import com.github.vipulasri.timelineview.sample.R;
+import com.cn.sleep.owl.R;
 import com.github.vipulasri.timelineview.TimelineView;
 
 import butterknife.BindView;

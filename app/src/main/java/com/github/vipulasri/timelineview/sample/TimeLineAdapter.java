@@ -7,13 +7,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.github.vipulasri.timelineview.sample.R;
+import com.cn.sleep.owl.R;
+import com.github.vipulasri.timelineview.TimelineView;
 import com.github.vipulasri.timelineview.sample.model.OrderStatus;
 import com.github.vipulasri.timelineview.sample.model.Orientation;
 import com.github.vipulasri.timelineview.sample.model.TimeLineModel;
-import com.github.vipulasri.timelineview.sample.utils.DateTimeUtils;
 import com.github.vipulasri.timelineview.sample.utils.VectorDrawableUtils;
-import com.github.vipulasri.timelineview.TimelineView;
 
 import java.util.List;
 

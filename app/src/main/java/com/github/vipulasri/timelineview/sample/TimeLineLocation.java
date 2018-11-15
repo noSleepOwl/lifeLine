@@ -13,22 +13,51 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.amap.api.location.AMapLocation;
+import com.amap.api.location.AMapLocationClient;
+import com.amap.api.location.AMapLocationClientOption;
+import com.amap.api.location.AMapLocationListener;
 import com.github.vipulasri.timelineview.sample.base.BaseActivity;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 @SuppressLint("MissingPermission")
-public class TimeLineLocation implements LocationListener {
+public class TimeLineLocation implements AMapLocationListener {
     protected String TAG = this.getClass().getName();
     private BaseActivity baseActivity;
     private RxPermissions rxPermissions;
     private LocationManager locationManager;
     private String baseProvider;
     private boolean power = false;
+    private AMapLocation aMapLocation = null;
+    //声明mLocationOption对象
+    private AMapLocationClientOption mLocationOption = null;
+
+    public AMapLocation getaMapLocation() {
+        return aMapLocation;
+    }
+
+    public void onLocationChanged(AMapLocation amapLocation) {
+        if (amapLocation != null) {
+            if (amapLocation.getErrorCode() == 0) {
+                this.aMapLocation = amapLocation;
+                Log.e("AmapError", aMapLocation.toString());
+            } else {
+                this.aMapLocation = null;
+                //显示错误信息ErrCode是错误码，errInfo是错误信息，详见错误码表。
+                Log.e("AmapError", "location Error, ErrCode:"
+                        + amapLocation.getErrorCode() + ", errInfo:"
+                        + amapLocation.getErrorInfo());
+            }
+        }
+    }
+
 
     public boolean isPower() {
         return power;
@@ -41,89 +70,36 @@ public class TimeLineLocation implements LocationListener {
         this.init();
     }
 
-    public List<Address> getAddressList() {
-        Geocoder gc = new Geocoder(baseActivity, Locale.getDefault());
-        Location location = getLocation();
-        if (location == null) {
-            return null;
-        }
-        double latitude = location.getLatitude();
-        double longitude = location.getLongitude();
-
-        List<Address> locationList = null;
-        try {
-            locationList = gc.getFromLocation(latitude, longitude, 1);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return locationList;
-      /*      locationList.forEach(address -> {
-                Log.i(TAG, "address =" + address);
-                String countryName = address.getCountryName();//得到国家名称，比如：中国
-                Log.i(TAG, "countryName = " + countryName);
-                String locality = address.getLocality();//得到城市名称，比如：北京市
-                Log.i(TAG, "locality = " + locality);
-                for (int i = 0; address.getAddressLine(i) != null; i++) {
-                    String addressLine = address.getAddressLine(i);//得到周边信息，包括街道等，i=0，得到街道名称
-                    Log.i(TAG, "addressLine = " + addressLine);
-                }
-            });*/
-
-    }
-
-
-    public String formatAddress() {
-        List<Address> locationList = getAddressList();
-        if (locationList == null || locationList.isEmpty()) {
-            return null;
-        }
-
-        return locationList.stream().map(address -> {
-            List<String> dir = new ArrayList<>();
-
-            Log.i(TAG, "address =" + address);
-            String countryName = address.getCountryName();//得到国家名称，比如：中国
-            Log.i(TAG, "countryName = " + countryName);
-            String locality = address.getLocality();//得到城市名称，比如：北京市
-            Log.i(TAG, "locality = " + locality);
-            for (int i = 0; address.getAddressLine(i) != null; i++) {
-                String addressLine = address.getAddressLine(i);//得到周边信息，包括街道等，i=0，得到街道名称
-                Log.i(TAG, "addressLine = " + addressLine);
-                String dress = String.format("%s-%s-%s", countryName, locality, addressLine);
-                dir.add(dress);
-            }
-            return dir;
-        }).flatMap(o -> o.stream()).reduce((a, b) -> a + "\n" + b).get();
-    }
-
-    public Location getLocation() {
-        if (!power) {
-            return null;
-        }
-        if (!locationManager.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER)) {
-            baseActivity.toastMsg("GPS 模块未启动");
-            return null;
-        }
-        return locationManager.getLastKnownLocation(baseProvider);
-    }
-
 
     @SuppressLint("CheckResult")
     private void init() {
         rxPermissions
-                .request(Manifest.permission.ACCESS_FINE_LOCATION)
+                .request(Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_WIFI_STATE,
+                        Manifest.permission.INTERNET,
+                        Manifest.permission.ACCESS_NETWORK_STATE)
                 .subscribe(granted -> {
                     power = granted;
                     if (granted) {
-                        Criteria criteria = new Criteria();
-                        criteria.setAccuracy(Criteria.ACCURACY_COARSE);//低精度，如果设置为高精度，依然获取不了location。
-                        criteria.setAltitudeRequired(false);//不要求海拔
-                        criteria.setBearingRequired(false);//不要求方位
-                        criteria.setCostAllowed(true);//允许有花费
-                        criteria.setPowerRequirement(Criteria.POWER_LOW);//低功耗
-                        locationManager = (LocationManager) baseActivity.getSystemService(Context.LOCATION_SERVICE);
-                        baseProvider = locationManager.getBestProvider(criteria, true);
-                        locationManager.requestLocationUpdates(baseProvider, 3000, 0, this);
+                        AMapLocationClient mlocationClient = new AMapLocationClient(baseActivity);
+//初始化定位参数
+                        mLocationOption = new AMapLocationClientOption();
+//设置返回地址信息，默认为true
+                        mLocationOption.setNeedAddress(true);
+//设置定位监听
+                        mlocationClient.setLocationListener(this);
+//设置定位模式为高精度模式，Battery_Saving为低功耗模式，Device_Sensors是仅设备模式
+                        mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
+//设置定位间隔,单位毫秒,默认为2000ms
+                        mLocationOption.setInterval(4000);
+//设置定位参数
+                        mlocationClient.setLocationOption(mLocationOption);
+// 此方法为每隔固定时间会发起一次定位请求，为了减少电量消耗或网络流量消耗，
+// 注意设置合适的定位时间的间隔（最小间隔支持为1000ms），并且在合适时间调用stopLocation()方法来取消定位请求
+// 在定位结束后，在合适的生命周期调用onDestroy()方法
+// 在单次定位情况下，定位无论成功与否，都无需调用stopLocation()方法移除请求，定位sdk内部会移除
+//启动定位
+                        mlocationClient.startLocation();
                     }
                 });
     }
@@ -132,23 +108,19 @@ public class TimeLineLocation implements LocationListener {
         Log.i(this.getClass().getSimpleName(), msg);
     }
 
-    @Override
-    public void onLocationChanged(Location location) {
-        logI("onLocationChanged");
+
+    public String getDir() {
+        if (this.aMapLocation != null) {
+            String s = aMapLocation.getProvince();//省信息
+            String c = aMapLocation.getCity();//城市信息
+            String d = aMapLocation.getDistrict();//城区信息
+            String e = aMapLocation.getStreet();//街道信息
+            String num = aMapLocation.getStreetNum();//街道门牌号信息
+            return s + "" + c + "" + d + "" + e + "" + num;
+        } else {
+            return "no_dir";
+        }
     }
 
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-        logI("onStatusChanged");
-    }
 
-    @Override
-    public void onProviderEnabled(String provider) {
-        logI("onProviderEnabled");
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-        logI("onProviderDisabled");
-    }
 }

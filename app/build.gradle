@@ -5,7 +5,7 @@ android {
     buildToolsVersion '28.0.3'
 
     defaultConfig {
-        applicationId "com.github.vipulasri.timelineview.sample"
+        applicationId "com.cn.sleep.owl"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 2
@@ -33,6 +33,7 @@ dependencies {
     implementation 'com.android.support:cardview-v7:28.0.0'
     implementation 'com.jakewharton:butterknife:9.0.0-rc1'
     annotationProcessor "com.jakewharton:butterknife-compiler:9.0.0-rc1"
+    implementation 'com.amap.api:location:4.3.0'
     //compile project (':timelineview')
     implementation 'org.litepal.android:core:2.0.0'
     implementation 'com.github.vipulasri:timelineview:1.0.6'

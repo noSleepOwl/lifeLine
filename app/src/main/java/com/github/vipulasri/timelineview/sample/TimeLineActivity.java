@@ -12,6 +12,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.amap.api.location.AMapLocation;
+import com.cn.sleep.owl.R;
 import com.github.vipulasri.timelineview.sample.Unit.Util;
 import com.github.vipulasri.timelineview.sample.base.BaseActivity;
 import com.github.vipulasri.timelineview.sample.model.DateseModel;
@@ -20,10 +22,12 @@ import com.github.vipulasri.timelineview.sample.model.TimeLineModel;
 
 import org.litepal.LitePal;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -99,26 +103,18 @@ public class TimeLineActivity extends BaseActivity {
             if (Util.isFastClick()) {
                 return;
             }
-            Location location = timeLineLocation.getLocation();
             String msg = "无法获取地理位置";
-            if (location != null) {
-                double latitude = location.getLatitude();
-                double longitude = location.getLongitude();
-                msg = "lng=" + longitude + "  lat=" + latitude;
-                dataModel.setLat(latitude);
-                dataModel.setLng(longitude);
-            }
-            String address = timeLineLocation.formatAddress();
-            if (address != null) {
-                msg = address;
-            }
+            AMapLocation amapLocation = timeLineLocation.getaMapLocation();
+
+
 //            timeLineModel.semMessage(msg);
-            dataModel.setMessage(msg);
+            dataModel.setMessage(timeLineLocation.getDir());
             dataModel.setCreateDate(Util.nowDate());
             dataModel.setCreateTime(Util.nowTime());
 //            timeLineModel.setStatus(OrderStatus.ACTIVE.ordinal());
             dataModel.assignBaseObjId(0);
             dataModel.save();
+
             mDataList.clear();
             mDataList.addAll(findLineByDate(Util.nowDate()));
 
@@ -147,7 +143,7 @@ public class TimeLineActivity extends BaseActivity {
 
     private List<TimeLineModel> coverDataToLine(List<DateseModel> models) {
         if (models == null || models.isEmpty()) {
-            return null;
+            return new ArrayList<>();
         }
         return models.stream().map(TimeLineModel::new).collect(Collectors.toList());
     }
@@ -219,5 +215,5 @@ public class TimeLineActivity extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    
+
 }
